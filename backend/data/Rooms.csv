@@ -1,0 +1,63 @@
+room_id,type,capacity
+B07 F1.01,Tutorial,15
+B07 F1.02,Tutorial,15
+B07 F1.04,Lab,15
+B07 F1.20,Tutorial,15
+B07 F1.21,Tutorial,15
+B07 F1.22,Tutorial,15
+B07 F1.23,Tutorial,15
+B07 F1.24,Lecture,15
+B07 G01,Lecture,45
+B07 G12,Lab,15
+B10 F1.01,Tutorial,15
+B10 F1.02,Tutorial,15
+B10 F1.04,Lab,15
+B10 F1.20,Tutorial,15
+B10 F1.21,Tutorial,15
+B10 F1.22,Tutorial,15
+B10 F1.23,Tutorial,15
+B10 F1.24,Lecture,15
+B10 G01,Lecture,45
+B10 G12,Lab,15
+B17.G17,Lab,30
+B17-G01,Lab,30
+B17-G16,Lab,30
+B17-G16,Lab,30
+B17-G22,Lab,30
+B17-G01,Lecture,45
+B17-G02,Lecture,45
+B17-G03,Lecture,45
+B17-G04,Lecture,45
+B17-G05,Lecture,45
+B18 F1.08,Tutorial,15
+B18 F1.1,Lecture,45
+B18 F1.10,Lecture,45
+B18 F1.12,Tutorial,15
+B18 F1.13,Tutorial,15
+B18 F1.19,Tutorial,15
+B18 F1.2,Tutorial,15
+B18 F1.20,Tutorial,15
+B18 F1.5,Lecture,45
+B18 G02,Tutorial,15
+B18 G04,Tutorial,15
+B18 G08,Lecture,45
+B18 G09,Lecture,45
+B18 G11,Tutorial,15
+B18 G12,Tutorial,15
+B18 G13,Lecture,45
+B18-G01,Lab,15
+B18-G05,Lab,15
+B18-G14,Lab,15
+B18-G17,Lab,15
+B18-G20,Lecture,45
+COE PHY LAB,Lab,45
+G17-G01,Lab,45
+Theater B07,Lecture,45
+Theater B08,Lecture,45
+Theater B09,Lecture,45
+Theater B10,Lecture,45
+Theater B25 F1.19,Lecture,45
+blue hall,Lecture,45
+red hall,Lecture,45
+yellow hall,Lecture,45
+green hall,Lecture,45

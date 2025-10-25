@@ -1,0 +1,54 @@
+﻿instructor_id,name,role,qualifications
+1,Salma Waleed,Assistant,"AID 312B,AID 311B,AID 311T"
+2,Ahmed Bayumi,Doctor,"AID 312L,AID 428L,AID 414"
+3,Nourhan Waleed,Assistant,"AID 312B,CNC 314B"
+4,Zeina Shreif,Assistant,"AID 427B,AID 427T"
+5,Zeina Ahmed,Assistant,"AID 428B,AID 428T,AID 427B,AID 427T,AID 321B,AID 321T"
+6,Rana Mohamed,Assistant,"AID 427B,AID 427T"
+7,Heba,Assistant,"CSE 214B,CSE 214T"
+8,Menna Hamdy,Assistant,"CNC 111B,AID 427B,AID 427T"
+9,Ahmed Anter,Doctor,"CNC 111L,AID 311L"
+10,Omnia Shehata,Assistant,"CNC 111B,AID 428B,AID 428T,AID 321B,AID 321T"
+11,Nada Hamdy,Assistant,"CSC 111B,CNC 311B"
+12,Samir Ahmed,Doctor,CNC 311L
+13,Fatma Elsayed,Assistant,"CNC 311B,AID 417B,AID 417T"
+14,Mohamed Issa,Doctor,"CNC 314L,AID 417L"
+15,Mariam Ismael,Assistant,CSC 111B
+16,Nour Akram,Assistant,CSC 111B
+17,Nada Essam,Assistant,"AID 411B,AID 411T"
+18,Mariem Nagy,Assistant,"CSC 111B,AID 413B,AID 413T"
+19,Reda Elbasiony,Doctor,"CSC 111L,AID 414"
+20,Marghany Hassan,Doctor,"AID 411L,AID 321L"
+21,Salma Alashry,Assistant,"CNC 314B,AID 321B,AID 321T"
+22,Ahmed Arafa,Doctor,"CSC 211L,AID 413L,AID 427L"
+23,Menna magdy,Assistant,"CSC 211B,CSC 317B"
+24,Nada Ahmed,Assistant,"CSC 211B,CSC 317B"
+25,Hataba,Doctor,CSC 317L
+26,Heba Abdelkader,Assistant,"CSE 214B,CSE 214T"
+27,Mostafa Soliman,Doctor,CSE 214L
+28,Omnya Ramadan,Assistant,"CSE 214B,CSE 214T"
+29,Ahmed Allam,Doctor,ECE 111L
+30,Sameh Sherif,Doctor,LRA105
+31,Mowahed El Qotren,Assistant,"ECE 111B,ECE 111T,PHY 113B,ACM 215T"
+32,Ahmed Abdel-Malk,Doctor,ACM 215L
+33,Fedaa El-Deen Aamer,Assistant,ACM 215T
+34,Sherine Elmotasem,Doctor,LRA 101
+35,Adel Al-senn,Doctor,LRA 101
+36,Mohamed El-khateeb,Doctor,LRA 306
+37,LBA,Doctor,LRA 306
+38,Eman Refaat,Assistant,"LRA 401,LRA 403"
+39,Miyazawa,Assistant,"LRA 401,LRA 403"
+40,Rika,Assistant,"LRA 401,LRA 403"
+41,Sato,Assistant,"LRA 401,LRA 403"
+42,Ayman Arafa,Doctor,"MTH 111L,ACM 215L,MTH 212L"
+43,Menna Mahmoud,Assistant,"MTH 111T,MTH 212T,ACM 215T"
+44,Laila Ibrahim,Assistant,"MTH 111T,PHY 113B,MTH 212T"
+45,Ahmed Zakaria,Doctor,"MTH 212L,MTH 111L,ACM 215L"
+46,Adel Fathy,Doctor,PHY 113L
+47,Bassant Tolba,Assistant,"PHY 113B,ECE 111B,ECE 111T,ACM 215T"
+48,Alaa Essam,Assistant,"AID 428B,AID 428T"
+49,Maria Mounir,Assistant,"AID 428B,AID 428T"
+50,Saeed Mostafa,Assistant,"AID 428B,AID 428T"
+51,Tarek Salah,Assistant,"CSE 214B,CSE 214T,AID 311B,AID 311T,CNC 314B"
+52,Nada Ahmed,Assistant,"CSC 211B,CSC 317B"
+53,Nourhan Waleed,Assistant,"AID 312B,CNC 314B"

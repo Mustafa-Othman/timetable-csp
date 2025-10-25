@@ -1,0 +1,56 @@
+course_id,course,type,Year
+LRA 401,Japanese Language,Tutorial,1
+CSC 111L,Fundamentals of Programming,Lecture,1
+CSC 111B,Fundamentals of Programming,Lab,1
+PHY 113L,Physics (1),Lecture,1
+PHY 113B,Physics (1),Lab,1
+ECE 111L,Digital Logic Design,Lecture,1
+ECE 111B,Digital Logic Design,Lab,1
+ECE 111T,Digital Logic Design,Tutorial,1
+MTH 111L,Mathematics (1),Lecture,1
+MTH 111T,Mathematics (1),Tutorial,1
+LRA 101,Japanese Culture,Lecture,1
+LRA105,Music and Technology,Lecture,1
+MTH 212L,Probability and Statistics,Lecture,2
+MTH 212T,Probability and Statistics,Tutorial,2
+CSC 211L,Software Engineering,Lecture,2
+CSC 211B,Software Engineering,Lab,2
+ACM 215L,Ordinary Differential Equations,Lecture,2
+ACM 215T,Ordinary Differential Equations,Tutorial,2
+LRA 403,Japanese Language (3),Tutorial,2
+CNC 111L,Networks and Web Programming,Lecture,2
+CNC 111B,Networks and Web Programming,Lab,2
+CSE 214L,Computer Organization,Lecture,2
+CSE 214B,Computer Organization,Lab,2
+CSE 214T,Computer Organization,Tutorial,2
+LRA 306,Natural Resources and Sustainability,Lecture,2
+CSC 317L,Computer Graphics and Visualization,Lecture,3
+CSC 317B,Computer Graphics and Visualization,Lab,3
+AID 312L,Intelligent Systems,Lecture,3
+AID 312B,Intelligent Systems,Lab,3
+AID 311L,Mathematics of Data Science,Lecture,3
+AID 311B,Mathematics of Data Science,Lab,3
+AID 311T,Mathematics of Data Science,Tutorial,3
+CNC 311L,Computer Networks,Lecture,3
+CNC 311B,Computer Networks,Lab,3
+CNC 314L,Database Systems,Lecture,3
+CNC 314B,Database Systems,Lab,3
+AID 321L,Machine Learning,Lecture,3
+AID 321B,Machine Learning,Lab,3
+AID 321T,Machine Learning,Tutorial,3
+AID 417L,Advanced Data Mining,Lecture,4
+AID 417B,Advanced Data Mining,Lab,4
+AID 417T,Advanced Data Mining,Tutorial,4
+AID 411L,BIG Data Analytics & Visualization,Lecture,4
+AID 411B,BIG Data Analytics & Visualization,Lab,4
+AID 411T,BIG Data Analytics & Visualization,Tutorial,4
+AID 428L,New Trends in AI,Lecture,4
+AID 428B,New Trends in AI,Lab,4
+AID 428T,New Trends in AI,Tutorial,4
+AID 414,Graduation Project I,Project,4
+AID 427L,New Trends in Data Science,Lecture,4
+AID 427B,New Trends in Data Science,Lab,4
+AID 427T,New Trends in Data Science,Tutorial,4
+AID 413L,Data Security,Lecture,4
+AID 413B,Data Security,Lab,4
+AID 413T,Data Security,Tutorial,4

@@ -1,6 +1,6 @@
 """
 CSP Solver for Timetable Generation
-Implements minimum cost backtracking algorithm with academic structure constraints
+Implements greedy algorithm with academic structure constraints
 """
 
 import time
@@ -9,7 +9,7 @@ from .constraints import ConstraintManager
 
 
 class CSPSolver:
-    """Generic CSP solver using minimum cost backtracking"""
+    """Generic CSP solver using greedy algorithm"""
     
     def __init__(self, model, constraint_manager):
         self.model = model
@@ -18,11 +18,11 @@ class CSPSolver:
         self.start_time = None
     
     def solve(self):
-        """Solve the CSP using minimum cost approach with backtracking"""
+        """Solve the CSP using greedy algorithm with backtracking"""
         self.iterations = 0
         self.start_time = time.time()
         
-        print("🔍 Using Minimum Cost CSP approach...")
+        print("🔍 Using Greedy Algorithm approach...")
         print(f"📊 Problem size: {len(self.model.variables)} variables")
         
         # Print domain statistics
@@ -30,56 +30,41 @@ class CSPSolver:
         avg_domains = total_domains / len(self.model.variables) if self.model.variables else 0
         print(f"📊 Total domain values: {total_domains}, Average per variable: {avg_domains:.1f}")
         
-        # Initialize best solution tracking
-        self.best_solution = None
-        self.best_cost = float('inf')
+        print("🔍 Starting greedy backtracking search...")
         
-        print("🔍 Starting cost-based backtracking search...")
-        
-        # Try cost-based approach first
-        if self._cost_based_backtrack():
-            return self.best_solution
-        
-        # If cost-based fails, try simple backtracking
-        print("⚠️ Cost-based approach failed, trying simple backtracking...")
-        self.model.assignment = {}  # Reset assignments
-        self.iterations = 0
-        
-        if self._simple_backtrack():
-            print("✅ Simple backtracking found a solution")
+        # Try greedy approach
+        if self._greedy_algorithm():
             return self.model.assignment
+        
+        print("⚠️ Greedy algorithm failed to find a solution.")
         
         return None
     
-    def _cost_based_backtrack(self):
-        """Cost-based backtracking that finds first feasible solution quickly"""
+    def _greedy_algorithm(self):
+        """Greedy backtracking that finds first feasible solution quickly"""
         self.iterations += 1
         
         # Check timeout (30 seconds)
         if time.time() - self.start_time > 30:
-            return self.best_solution is not None
+            return False
         
         # Print progress every 1000 iterations
         if self.iterations % 1000 == 0:
             print(f"🔍 Iteration {self.iterations}, assigned: {len(self.model.assignment)}/{len(self.model.variables)}")
+            # Print course completion status
+            self._print_course_completion_status()
         
         if self.model.is_complete():
-            # Found a complete solution - calculate its cost
-            current_cost = self._calculate_solution_cost()
-            if current_cost < self.best_cost:
-                self.best_cost = current_cost
-                self.best_solution = self.model.assignment.copy()
-                print(f"💰 Found solution with cost: {current_cost:.2f}")
-                # Return True to stop searching (first solution found)
-                return True
+            # Found a complete solution
+            print(f"✅ Greedy algorithm found a solution!")
             return True
         
-        # Select unassigned variable
-        variable_id = self._select_unassigned_variable()
+        # Select unassigned variable using course-aware strategy
+        variable_id = self._select_unassigned_variable_course_aware()
         if not variable_id:
             return False
         
-        # Order domain values by cost (lowest cost first)
+        # Order domain values by cost (lowest cost first - Greedy choice)
         domain_values = self._order_domain_values_by_cost(variable_id)
         
         for domain in domain_values:
@@ -88,7 +73,7 @@ class CSPSolver:
                 self.model.assign(variable_id, domain)
                 
                 # Recursive call - stop if solution found
-                if self._cost_based_backtrack():
+                if self._greedy_algorithm():
                     return True
                 
                 # Backtrack
@@ -96,66 +81,10 @@ class CSPSolver:
         
         return False
     
-    def _simple_backtrack(self):
-        """Simple backtracking without cost optimization"""
-        self.iterations += 1
-        
-        # Check timeout (15 seconds for simple approach)
-        if time.time() - self.start_time > 45:  # Total 45 seconds (30 for cost + 15 for simple)
-            return False
-        
-        # Print progress
-        if self.iterations % 500 == 0:
-            print(f"🔍 Simple backtrack iteration {self.iterations}, assigned: {len(self.model.assignment)}/{len(self.model.variables)}")
-        
-        if self.model.is_complete():
-            return True
-        
-        # Select unassigned variable (simple heuristic)
-        variable_id = self._select_unassigned_variable()
-        if not variable_id:
-            return False
-        
-        # Try domain values in original order (no cost sorting)
-        for domain in self.model.domains[variable_id]:
-            if self._is_consistent(variable_id, domain):
-                # Make assignment
-                self.model.assign(variable_id, domain)
-                
-                # Recursive call
-                if self._simple_backtrack():
-                    return True
-                
-                # Backtrack
-                self.model.unassign(variable_id)
-        
-        return False
+
     
-    def _calculate_solution_cost(self):
-        """Calculate the cost of current solution"""
-        total_cost = 0.0
-        
-        for var_id, domain in self.model.assignment.items():
-            variable = self.model.variables[var_id]
-            
-            # Time slot preference cost (prefer earlier times)
-            time_cost = self._get_time_preference_cost(domain.timeslot)
-            
-            # Room utilization cost (prefer efficient room usage)
-            room_cost = self._get_room_cost(variable, domain.room)
-            
-            # Instructor workload cost (prefer balanced workload)
-            instructor_cost = self._get_instructor_cost(domain.instructor)
-            
-            # Day distribution cost (prefer spread across days)
-            day_cost = self._get_day_distribution_cost(domain.timeslot)
-            
-            # Time slot distribution cost (prefer spread across time slots)
-            timeslot_cost = self._get_timeslot_distribution_cost(domain.timeslot)
-            
-            total_cost += time_cost + room_cost + instructor_cost + day_cost + timeslot_cost
-        
-        return total_cost
+
+
     
     def _get_time_preference_cost(self, timeslot):
         """Equal cost for all time slots - no preference"""
@@ -218,9 +147,47 @@ class CSPSolver:
         domain_costs.sort(key=lambda x: x[0])
         return [domain for cost, domain in domain_costs]
     
-    def _backtrack(self):
-        """Fallback simple backtracking"""
-        return self._cost_based_backtrack()
+
+
+    
+    def _select_unassigned_variable_course_aware(self):
+        """Select variable using course-aware strategy to ensure course completeness"""
+        unassigned = self.model.get_unassigned_variables()
+        if not unassigned:
+            return None
+        
+        # Group unassigned variables by base course
+        course_groups = {}
+        for var_id in unassigned:
+            variable = self.model.variables[var_id]
+            base_course = getattr(variable, 'base_course', variable.course_id)
+            if base_course not in course_groups:
+                course_groups[base_course] = []
+            course_groups[base_course].append(var_id)
+        
+        # Prioritize courses that have some components already assigned
+        partially_assigned_courses = []
+        unassigned_courses = []
+        
+        for base_course, var_ids in course_groups.items():
+            # Check if any component of this course is already assigned
+            has_assigned_component = False
+            for var_id, domain in self.model.assignment.items():
+                variable = self.model.variables[var_id]
+                if getattr(variable, 'base_course', variable.course_id) == base_course:
+                    has_assigned_component = True
+                    break
+            
+            if has_assigned_component:
+                partially_assigned_courses.extend(var_ids)
+            else:
+                unassigned_courses.extend(var_ids)
+        
+        # Prioritize partially assigned courses first, then unassigned courses
+        priority_variables = partially_assigned_courses + unassigned_courses
+        
+        # Among priority variables, choose the most constrained (smallest domain)
+        return min(priority_variables, key=lambda var_id: len(self.model.domains[var_id]))
     
     def _select_unassigned_variable(self):
         """Select variable using Most Constraining Variable heuristic"""
@@ -230,6 +197,36 @@ class CSPSolver:
         
         # Choose variable with smallest domain (most constrained)
         return min(unassigned, key=lambda var_id: len(self.model.domains[var_id]))
+    
+    def _print_course_completion_status(self):
+        """Print status of course completion"""
+        # Group variables by base course
+        course_status = {}
+        for var_id, variable in self.model.variables.items():
+            base_course = getattr(variable, 'base_course', variable.course_id)
+            if base_course not in course_status:
+                course_status[base_course] = {'total': 0, 'assigned': 0, 'components': []}
+            
+            course_status[base_course]['total'] += 1
+            course_status[base_course]['components'].append(f"{variable.course_id}({variable.session_type})")
+            
+            if var_id in self.model.assignment:
+                course_status[base_course]['assigned'] += 1
+        
+        # Print summary
+        complete_courses = 0
+        partial_courses = 0
+        unassigned_courses = 0
+        
+        for base_course, status in course_status.items():
+            if status['assigned'] == status['total']:
+                complete_courses += 1
+            elif status['assigned'] > 0:
+                partial_courses += 1
+            else:
+                unassigned_courses += 1
+        
+        print(f"📊 Course Status: {complete_courses} complete, {partial_courses} partial, {unassigned_courses} unassigned")
     
     def _order_domain_values(self, variable_id):
         """Order domain values using Least Constraining Value heuristic"""
@@ -303,7 +300,10 @@ class TimetableSolver:
             print(f"💰 Final solution cost: {solver.best_cost:.2f}") 
         
         if solution:
-            return self._format_solution(solution, courses, instructors, rooms, timeslots)
+            formatted_solution = self._format_solution(solution, courses, instructors, rooms, timeslots)
+            # Validate course completeness
+            self._validate_course_completeness(formatted_solution, courses)
+            return formatted_solution
         else:
             return None
     
@@ -314,24 +314,30 @@ class TimetableSolver:
         # Group sections by year and group
         year_structure = self._analyze_academic_structure(sections)
         
-        # Create variables for each course-section combination
-        for course in courses:
-            course_id = course['course_id']
-            # Each course now has a single type (no more comma-separated types)
-            course_types = [course['type'].strip()]
-            course_year = int(course['Year'])
-            
-            # Get sections for this year
+        # Group courses by base course (e.g., CSC 111L, CSC 111B, CSC 111T -> CSC 111)
+        course_groups = self._group_courses_by_base(courses)
+        
+        print(f"📚 Found {len(course_groups)} course groups:")
+        for base_course, components in course_groups.items():
+            component_types = [c['type'] for c in components]
+            print(f"  {base_course}: {component_types}")
+        
+        # Create variables for each course component
+        for base_course, course_components in course_groups.items():
+            # Get year from any component (they should all be the same)
+            course_year = int(course_components[0]['Year'])
             year_sections = [s for s in sections if int(s['year']) == course_year]
+            groups = year_structure[course_year]
             
-            for course_type in course_types:
-                course_type = course_type.lower()
+            for course in course_components:
+                course_id = course['course_id']
+                course_type = course['type'].strip().lower()
                 
                 if course_type == 'lecture':
                     # Lectures: one variable per group (3 sections together)
-                    groups = year_structure[course_year]
                     for group_id, group_sections in groups.items():
-                        variable = Variable(course_id, None, course_type, group_id, 1.0)
+                        variable = Variable(course_id, None, course_type, group_id, 1.0, year=course_year)
+                        variable.base_course = base_course  # Add base course reference
                         model.add_variable(variable)
                         
                         # Create domains for this variable
@@ -347,7 +353,8 @@ class TimetableSolver:
                     
                     for section in year_sections:
                         section_id = section['section']
-                        variable = Variable(course_id, section_id, course_type, None, duration)
+                        variable = Variable(course_id, section_id, course_type, None, duration, year=course_year)
+                        variable.base_course = base_course  # Add base course reference
                         model.add_variable(variable)
                         
                         # Create domains for this variable
@@ -359,9 +366,9 @@ class TimetableSolver:
                 
                 elif course_type == 'project':
                     # Projects: one variable per group (like lectures but different type)
-                    groups = year_structure[course_year]
                     for group_id, group_sections in groups.items():
-                        variable = Variable(course_id, None, course_type, group_id, 1.0)
+                        variable = Variable(course_id, None, course_type, group_id, 1.0, year=course_year)
+                        variable.base_course = base_course  # Add base course reference
                         model.add_variable(variable)
                         
                         # Create domains for this variable
@@ -372,6 +379,27 @@ class TimetableSolver:
                             model.add_domain_value(variable.id, domain)
         
         return model
+    
+    def _group_courses_by_base(self, courses):
+        """Group courses by their base course (e.g., CSC 111L, CSC 111B -> CSC 111)"""
+        import re
+        course_groups = {}
+        
+        for course in courses:
+            course_id = course['course_id']
+            # Extract base course (remove L/B/T suffix)
+            base_match = re.match(r'^([A-Z]{3}\s+\d{3})[LBT]?$', course_id)
+            if base_match:
+                base_course = base_match.group(1)
+            else:
+                # Fallback for courses without suffix
+                base_course = course_id
+            
+            if base_course not in course_groups:
+                course_groups[base_course] = []
+            course_groups[base_course].append(course)
+        
+        return course_groups
     
     def _analyze_academic_structure(self, sections):
         """Analyze sections to understand year/group structure"""
@@ -467,12 +495,65 @@ class TimetableSolver:
                 'day_time': domain.timeslot,
                 'room': domain.room,
                 'instructor': domain.instructor,
-                'duration': variable.duration
+                'duration': variable.duration,
+                'year': int(course['Year'])
             }
             
             timetable.append(timetable_entry)
         
         return timetable
+    
+    def _validate_course_completeness(self, timetable, courses):
+        """Validate that all course components are present in the timetable"""
+        print("\n🔍 Validating course completeness...")
+        
+        # Group courses by base course
+        course_groups = self._group_courses_by_base(courses)
+        
+        # Group timetable entries by base course
+        timetable_by_base = {}
+        for entry in timetable:
+            course_id = entry['course_id']
+            import re
+            base_match = re.match(r'^([A-Z]{3}\s+\d{3})[LBT]?$', course_id)
+            if base_match:
+                base_course = base_match.group(1)
+            else:
+                base_course = course_id
+            
+            if base_course not in timetable_by_base:
+                timetable_by_base[base_course] = []
+            timetable_by_base[base_course].append(entry)
+        
+        # Check completeness
+        complete_courses = 0
+        incomplete_courses = 0
+        
+        for base_course, course_components in course_groups.items():
+            expected_components = set(c['course_id'] for c in course_components)
+            actual_components = set()
+            
+            if base_course in timetable_by_base:
+                actual_components = set(entry['course_id'] for entry in timetable_by_base[base_course])
+            
+            missing_components = expected_components - actual_components
+            
+            if missing_components:
+                incomplete_courses += 1
+                print(f"❌ {base_course}: Missing {missing_components}")
+            else:
+                complete_courses += 1
+                print(f"✅ {base_course}: Complete")
+        
+        print(f"\n📊 Course Completeness Summary:")
+        print(f"   Complete courses: {complete_courses}")
+        print(f"   Incomplete courses: {incomplete_courses}")
+        print(f"   Total courses: {len(course_groups)}")
+        
+        if incomplete_courses > 0:
+            print(f"⚠️  {incomplete_courses} courses are missing some components!")
+        else:
+            print("🎉 All courses have all their components scheduled!")
 
 
 

@@ -149,86 +149,6 @@ class InstructorQualificationConstraint(Constraint):
         return True
 
 
-class InstructorRoleConstraint(Constraint):
-    """
-    Role constraint with robust, case-insensitive matching and configurable policy.
-    Slightly permissive: doctors may teach tutorials/seminars in addition to lectures.
-    """
-    ROLE_SYNONYMS = {
-        'doctor': {'doctor', 'dr', 'professor', 'prof', 'doctorate'},
-        'assistant': {'assistant', 'ta', 'tutor', 'lab-assistant', 'lab_assistant'}
-    }
-
-    # Note: added 'tutorial' to doctor allowed set to reduce false rejections.
-    DEFAULT_ROLE_ALLOW = {
-        'doctor': {'lecture', 'project', 'seminar', 'presentation', 'tutorial'},
-        'assistant': {'lab', 'tutorial', 'practical', 'help', 'workshop'}
-    }
-
-    def __init__(self, variables, instructors, role_allow_map=None, strict_default=False, debug=False):
-        self.variables = variables
-        self.debug = debug
-        self.strict_default = strict_default
-        self.role_allow_map = role_allow_map or dict(self.DEFAULT_ROLE_ALLOW)
-        self.instructor_roles = {}
-        for ins in instructors:
-            name = ins.get('name')
-            role_raw = ins.get('role', '')
-            norm_role = self._normalize_role(role_raw)
-            if name:
-                self.instructor_roles[name] = norm_role
-
-    def _normalize_role(self, role_str):
-        if not role_str:
-            return None
-        r = role_str.strip().lower()
-        for canonical, synonyms in self.ROLE_SYNONYMS.items():
-            if r in synonyms:
-                return canonical
-        return r
-
-    def _normalize_session(self, session_str):
-        if not session_str:
-            return None
-        return session_str.strip().lower()
-
-    def is_satisfied(self, assignment):
-        for var_id, domain in assignment.items():
-            variable = self.variables[var_id]
-            instructor = domain.instructor
-            session_type_raw = getattr(variable, 'session_type', None)
-            session_type = self._normalize_session(session_type_raw)
-            if session_type is None:
-                if self.debug:
-                    print(f"[InstructorRoleConstraint] var {var_id}: missing session_type -> permissive")
-                continue
-            role_norm = self.instructor_roles.get(instructor)
-            if role_norm is None:
-                if self.strict_default:
-                    if self.debug:
-                        print(f"[InstructorRoleConstraint] var {var_id}: unknown instructor '{instructor}' -> strict fail")
-                    return False
-                else:
-                    if self.debug:
-                        print(f"[InstructorRoleConstraint] var {var_id}: unknown instructor '{instructor}' -> skip role check")
-                    continue
-            allowed_sessions = self.role_allow_map.get(role_norm, set())
-            if not allowed_sessions:
-                if self.strict_default:
-                    if self.debug:
-                        print(f"[InstructorRoleConstraint] var {var_id}: role '{role_norm}' has no allowed sessions -> strict fail")
-                    return False
-                else:
-                    if self.debug:
-                        print(f"[InstructorRoleConstraint] var {var_id}: role '{role_norm}' no allowed sessions -> permissive skip")
-                    continue
-            if session_type not in allowed_sessions:
-                if self.debug:
-                    print(f"[InstructorRoleConstraint] REJECT var {var_id}: instructor '{instructor}' (role='{role_norm}') not allowed to teach '{session_type}' (allowed: {allowed_sessions})")
-                return False
-        return True
-
-
 class NoStudentConflictConstraint(Constraint):
     """Flexible constraint allowing strategic section merging based on room capacity"""
     def __init__(self, variables, sections, rooms=None, debug=False):
@@ -240,7 +160,7 @@ class NoStudentConflictConstraint(Constraint):
             year = int(section['year'])
             group = int(section['group'])
             section_id = int(section['section'])
-            self.section_to_group[section_id] = (year, group)
+            self.section_to_group[(year, section_id)] = group
 
     def is_satisfied(self, assignment):
         timeslot_room_schedule = {}
@@ -280,7 +200,7 @@ class NoStudentConflictConstraint(Constraint):
         section_classes = []
         group_classes = []
         for variable, domain in var_domain_pairs:
-            year = self._extract_year_from_course_id(getattr(variable, 'course_id', ''))
+            year = getattr(variable, 'year', None) or self._extract_year_from_course_id(getattr(variable, 'course_id', ''))
             stype = getattr(variable, 'session_type', '').lower()
             if stype == 'lecture' and getattr(variable, 'group_id', None):
                 group_classes.append((variable, domain, year))
@@ -307,7 +227,7 @@ class NoStudentConflictConstraint(Constraint):
         occupied_groups = set()
         occupied_sections = set()
         for variable, domain in var_domain_pairs:
-            year = self._extract_year_from_course_id(getattr(variable, 'course_id', ''))
+            year = getattr(variable, 'year', None) or self._extract_year_from_course_id(getattr(variable, 'course_id', ''))
             stype = getattr(variable, 'session_type', '').lower()
             if stype == 'lecture' and getattr(variable, 'group_id', None):
                 group_key = (year, variable.group_id)
@@ -316,7 +236,7 @@ class NoStudentConflictConstraint(Constraint):
                         print(f"[NoStudentConflict::_check_student_conflicts] group {group_key} double-booked")
                     return False
                 occupied_groups.add(group_key)
-                for section_id, (sec_year, sec_group) in self.section_to_group.items():
+                for (sec_year, section_id), sec_group in self.section_to_group.items():
                     if sec_year == year and sec_group == variable.group_id:
                         occupied_sections.add((year, section_id))
             elif getattr(variable, 'section_id', None):
@@ -353,8 +273,7 @@ class ConstraintManager:
             NoRoomConflictConstraint(variables, rooms, debug=debug),
             RoomTypeConstraint(variables, rooms, debug=debug),
             InstructorQualificationConstraint(variables, instructors, debug=debug),
-            # InstructorRoleConstraint(variables, instructors, strict_default=False, debug=debug),
-            # NoStudentConflictConstraint(variables, sections, rooms, debug=debug)
+            NoStudentConflictConstraint(variables, sections, rooms, debug=debug)
         ]
 
     def check_hard_constraints(self, assignment):

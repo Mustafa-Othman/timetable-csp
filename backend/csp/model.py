@@ -6,12 +6,13 @@ Defines variables and domains for the academic structure
 class Variable:
     """Represents a class session to be scheduled"""
     
-    def __init__(self, course_id, section_id, session_type, group_id=None, duration=1.0):
+    def __init__(self, course_id, section_id, session_type, group_id=None, duration=1.0, year=None):
         self.course_id = course_id
         self.section_id = section_id
         self.session_type = session_type  # 'lecture', 'lab', 'tutorial'
         self.group_id = group_id  # For lectures (group-level scheduling)
         self.duration = duration  # 1.0 for full slot, 0.5 for tutorial half-slot
+        self.year = year  # Academic year used for conflict detection
         
         # Create unique variable ID
         if group_id:
